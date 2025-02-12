@@ -1,7 +1,8 @@
 version: '3.9'
 
 services:
-  # Banco de Dados SQL Server
+  
+  # Database container
   sql-server:
     image: mcr.microsoft.com/mssql/server:2019-latest
     container_name: sql-server
@@ -13,12 +14,25 @@ services:
     volumes:
       - sqlvolume:/var/opt/mssql
     networks:
-      - minha-rede
+      - companyapi-network
+  
+  # Run initial scripts container
+  sql-server-cmd:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    container_name: sql-server-cmd
+    command: /bin/bash -c '/opt/mssql-tools/bin/sqlcmd -S sql-server -U sa -P Password1! -i /dbinit.sql'
+    restart: on-failure
+    networks:
+      - companyapi-network
+    depends_on: 
+      - sql-server
 
 volumes:
   sqlvolume:
   #apivolume:
 
 networks:
-  minha-rede:
+  companyapi-network:
     driver: bridge
