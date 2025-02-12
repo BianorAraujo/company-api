@@ -28,10 +28,22 @@ services:
       - companyapi-network
     depends_on: 
       - sql-server
+  
+  # backend container
+  web-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dotnet-api
+    ports:
+      - "5055:8080"
+    networks:
+      - companyapi-network
+    depends_on: 
+      - sql-server
 
 volumes:
   sqlvolume:
-  #apivolume:
 
 networks:
   companyapi-network:
