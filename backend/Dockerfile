@@ -5,11 +5,17 @@ FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_VERSION} AS build
 
 WORKDIR /src
 
-COPY ./CompanyApi/*.csproj ./
-RUN dotnet restore "./CompanyApi.csproj"
+COPY ./CompanyApi.sln ./
+COPY ./CompanyApi/*.csproj ./CompanyApi/
+COPY ./CompanyApi.Business/*.csproj ./CompanyApi.Business/
+COPY ./CompanyApi.Test/*.csproj ./CompanyApi.Test/
 
-COPY ./CompanyApi ./
-RUN dotnet publish "./CompanyApi.csproj" -c Release -o /publish
+RUN dotnet restore "CompanyApi/CompanyApi.csproj"
+
+COPY . ./
+
+WORKDIR /src/CompanyApi
+RUN dotnet publish -c Release -o /publish
 
 #
 FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_VERSION} AS runtime
