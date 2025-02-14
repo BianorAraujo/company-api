@@ -42,7 +42,7 @@ http://localhost:5055/scalar/v1
 ```
 
 For stopping the containers:
-````
+```
 docker compose -f compose.yaml down
 ```
 

@@ -1,4 +1,7 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CompanyApi.Controllers;
 
@@ -6,15 +9,25 @@ namespace CompanyApi.Controllers;
 [Route("[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly ILogger<AuthController> _logger;
-    public AuthController(ILogger<AuthController> logger)
+    private readonly IConfiguration _configuration;
+    public AuthController(IConfiguration configuration)
     {
-        _logger = logger;
+        _configuration = configuration;
     }
 
     [HttpGet("GetToken")]
-    public async Task<IActionResult> GetToken()
+    public IActionResult GetToken()
     {
-        return Ok("GetToken OK!");
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: _configuration["Jwt:Issuer"],
+            audience: _configuration["Jwt:Audience"],
+            expires: DateTime.Now.AddMinutes(30),
+            signingCredentials: credentials
+        );
+
+        return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
     }
 }

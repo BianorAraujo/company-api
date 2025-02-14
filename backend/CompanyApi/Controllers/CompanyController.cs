@@ -1,23 +1,22 @@
-using System.Security.Permissions;
 using AutoMapper;
 using CompanyApi.Business.Interfaces;
 using CompanyApi.Business.Models;
 using CompanyApi.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyApi.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class CompanyController : ControllerBase
 {
-    private readonly ILogger<CompanyController> _logger;
     private readonly ICompanyRepository _repository;
     private readonly IMapper _mapper;
 
-    public CompanyController(ILogger<CompanyController> logger, ICompanyRepository repository, IMapper mapper)
+    public CompanyController(ICompanyRepository repository, IMapper mapper)
     {
-        _logger = logger;
         _repository = repository;
         _mapper = mapper;
     }
