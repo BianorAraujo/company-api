@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Company } from 'src/app/models/company';
+import { AuthService } from 'src/app/services/auth.service';
 import { CompanyService } from 'src/app/services/company.service';
 
 @Component({
@@ -16,9 +17,13 @@ export class TableComponent {
   searchIsinError: string = '';
   selectedSearch: string = 'id';
 
-  constructor(private companyService: CompanyService) {}
+  constructor(private companyService: CompanyService, private authService: AuthService) {}
 
   ngOnInit(): void {
+    this.authService.GetToken().subscribe(response => {
+      localStorage.setItem('token', response.token);
+    });
+
     this.getAllCompanies();
   }
 
@@ -134,8 +139,6 @@ export class TableComponent {
         this.companies[index] = updatedItem;
       }
     }
-    
-    //this.showModal = false;
   }
 
   closeModal() {
