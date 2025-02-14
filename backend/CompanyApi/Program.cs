@@ -6,6 +6,16 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        name: "OpenCORSPolicy",
+        x =>
+        {
+            x.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();
+        });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
@@ -32,6 +42,8 @@ app.MapScalarApiReference(option => {
 
 
 app.UseHttpsRedirection();
+
+app.UseCors("OpenCORSPolicy");
 
 app.UseAuthorization();
 

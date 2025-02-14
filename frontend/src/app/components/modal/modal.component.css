@@ -1,0 +1,16 @@
+.modal.fade.show {
+    background: rgba(0, 0, 0, 0.5);
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-dialog {
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .error-message {
+    color: red;
+    font-size: small;
+}

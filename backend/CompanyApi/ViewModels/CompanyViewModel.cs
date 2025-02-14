@@ -21,7 +21,8 @@ public class CompanyViewModel
 
     [Required(ErrorMessage = "The {0} field is required")]
     [StringLength(12, ErrorMessage = "The {0} field must be {1} characters long.", MinimumLength = 12)]
+    [RegularExpression("^[a-zA-Z]{2}.*", ErrorMessage = "The first two characters of the ISIN must be letters.")]
     public string Isin { get; set; }
-
+    
     public string? Website { get; set; }
 }
