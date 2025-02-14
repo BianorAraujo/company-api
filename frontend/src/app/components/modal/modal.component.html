@@ -1,0 +1,41 @@
+<div class="modal fade show d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ titleModal }}</h5>
+          <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control" [(ngModel)]="item.name" name="name">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Exchange</label>
+              <input type="text" class="form-control" [(ngModel)]="item.exchange" name="exchange">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Ticker</label>
+              <input type="text" class="form-control" [(ngModel)]="item.ticker" name="ticker">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">ISIN</label>
+              <input type="text" class="form-control" [(ngModel)]="item.isin" name="isin">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Website</label>
+              <input type="text" class="form-control" [(ngModel)]="item.website" name="website">
+            </div>
+            <div *ngIf="hasError" class="error-message" style="white-space: pre-line;">
+                {{ errorMessage }}
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          <button type="button" class="btn btn-color" (click)="onSave()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>

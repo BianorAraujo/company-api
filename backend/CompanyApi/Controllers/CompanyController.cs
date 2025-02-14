@@ -1,3 +1,4 @@
+using System.Security.Permissions;
 using AutoMapper;
 using CompanyApi.Business.Interfaces;
 using CompanyApi.Business.Models;
@@ -82,6 +83,10 @@ public class CompanyController : ControllerBase
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
+        
+        var company = await _repository.GetByIsin(viewModel.Isin);
+        if (company != null)
+            return BadRequest(new { code = "ISIN", error = "The ISIN already exists!" });
 
         try
         {
@@ -98,13 +103,15 @@ public class CompanyController : ControllerBase
     [HttpPut("Update/{id}")]
     public async Task<IActionResult> Update(int id, CompanyViewModel viewModel)
     {
-        if (id != viewModel.Id)
-        {
-            return BadRequest("The Ids are not equal!");
-        }
-
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
+
+        if (id != viewModel.Id)
+            return BadRequest(new { code = "ID", error = "The Ids are not equal!" });
+
+        var companyByIsin = await _repository.GetByIsin(viewModel.Isin);
+        if (companyByIsin != null && companyByIsin.Id != id)
+            return BadRequest(new { code = "ISIN", error = "The ISIN already exists!" });
 
         try
         {
@@ -119,10 +126,5 @@ public class CompanyController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-    }
-
-    private async Task<CompanyViewModel> GetCompany(int id)
-    {
-        return _mapper.Map<CompanyViewModel>(await _repository.GetById(id));
     }
 }
