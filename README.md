@@ -31,12 +31,16 @@ Run this command to up all containers:
 docker compose -f compose.yaml up --build -d
 ```
 
-Url to access the application:
+Now, the application and the API are running, including the database and tables that were also created.
+
+It's ready to use!
+
+Accesss the application in the following url:
 ```
 http://localhost:4200
 ```
 
-Url to access the API:
+Access the API in the following url:
 ```
 http://localhost:5055/scalar/v1
 ```
@@ -47,4 +51,16 @@ docker compose -f compose.yaml down
 ```
 
 ## Images
+
+### Frontend
+
+<img width="1254" alt="CompanyApp" src="https://github.com/user-attachments/assets/3619e2ab-011c-42b1-9889-816379ab29e0" />
+
+### Backend
+
+<img width="1238" alt="CompanyApi" src="https://github.com/user-attachments/assets/a3f46fb9-f864-488a-a32e-411cad5e00df" />
+
+### Unit Tests
+
+<img width="1270" alt="image" src="https://github.com/user-attachments/assets/527d3920-3ca6-451d-92d8-413d094c55ba" />
 
