@@ -53,7 +53,7 @@ Use the Auth/GetToken endpoint to get the token:
 http://localhost:5055/auth/gettoken
 ````
 
-With the token, you can access the Company endpoints using the token in the Authorization header. [See an example](#authorization)
+With the token, you can access the Company endpoints using the token in the Authorization header. [See an example](#authentication)
 
 For stopping the containers:
 ```
@@ -76,3 +76,4 @@ docker compose -f compose.yaml down
 
 ### Authentication
 
+<img width="1270" alt="image" src="https://github.com/user-attachments/assets/233ead93-e48e-4fce-b451-b0deead11dd4" />
