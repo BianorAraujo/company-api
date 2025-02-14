@@ -31,7 +31,7 @@ Run this command to up all containers:
 docker compose -f compose.yaml up --build -d
 ```
 
-Now, the application and the API are running, including the database and tables that were also created.
+Now, the Application and the API are running, including the database and tables that were also created.
 
 It's ready to use!
 
@@ -44,6 +44,16 @@ Access the API in the following url:
 ```
 http://localhost:5055/scalar/v1
 ```
+
+The API is protected by JWT token, so you'll need to generate a token to access Company endpoints.
+
+Use the Auth/GetToken endpoint to get the token:
+
+````
+http://localhost:5055/auth/gettoken
+````
+
+With the token, you can access the Company endpoints using the token in the Authorization header. [See an example](#authorization)
 
 For stopping the containers:
 ```
@@ -63,4 +73,6 @@ docker compose -f compose.yaml down
 ### Unit Tests
 
 <img width="1270" alt="image" src="https://github.com/user-attachments/assets/527d3920-3ca6-451d-92d8-413d094c55ba" />
+
+### Authentication
 
