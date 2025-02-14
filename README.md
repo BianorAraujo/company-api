@@ -31,7 +31,7 @@ Run this command to up all containers:
 docker compose -f compose.yaml up --build -d
 ```
 
-Now, the Application and the API are running, including the database and tables that were also created.
+Now, the application and the API are running, including the database and tables that were also created.
 
 It's ready to use!
 
