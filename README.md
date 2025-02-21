@@ -1,4 +1,4 @@
-# Company Api
+# Company Records
 
 ![last-commit](https://badgen.net/github/last-commit/BianorAraujo/company-api) ![license](https://badgen.net/github/license/BianorAraujo/company-api)
 
@@ -72,8 +72,8 @@ docker compose -f compose.yaml down
 
 ### Unit Tests
 
-<img width="1270" alt="image" src="https://github.com/user-attachments/assets/527d3920-3ca6-451d-92d8-413d094c55ba" />
+<img width="1270" alt="Unit Test" src="https://github.com/user-attachments/assets/527d3920-3ca6-451d-92d8-413d094c55ba" />
 
 ### Authentication
 
-<img width="1270" alt="image" src="https://github.com/user-attachments/assets/233ead93-e48e-4fce-b451-b0deead11dd4" />
+<img width="1270" alt="Authentication" src="https://github.com/user-attachments/assets/233ead93-e48e-4fce-b451-b0deead11dd4" />

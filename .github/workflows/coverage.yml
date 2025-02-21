@@ -1,0 +1,41 @@
+name: Build and Coverage
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore CompanyApi.sln
+      working-directory: ./backend
+
+    - name: Build
+      run: dotnet build CompanyApi.sln --no-restore
+      working-directory: ./backend
+
+    - name: Run tests with coverage
+      run: dotnet test --no-build --collect:"XPlat Code Coverage" --results-directory ./coverage
+      working-directory: ./backend/CompanyApi.Test
+
+    - name: Publish to Coveralls
+      uses: coverallsapp/github-action@v2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./backend/CompanyApi.Test/coverage/*/coverage.cobertura.xml
+        flag-name: unit-tests
+        parallel: false
