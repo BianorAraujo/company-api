@@ -18,7 +18,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x' # Adjust to your .NET version
+        dotnet-version: '9.0.x' # Adjust to your .NET version
 
     - name: Restore dependencies
       run: dotnet restore
@@ -28,12 +28,12 @@ jobs:
 
     - name: Run tests with coverage
       run: dotnet test --no-build --collect:"XPlat Code Coverage" --results-directory ./coverage
-      working-directory: ./CompanyApi.Test # Adjust to your test project path
+      working-directory: .backend/CompanyApi.Test # Adjust to your test project path
 
     - name: Publish to Coveralls
       uses: coverallsapp/github-action@v2
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ./CompanyApi.Test/coverage/*/coverage.cobertura.xml # Wildcard for GUID folder
+        path-to-lcov: .backend/CompanyApi.Test/coverage/*/coverage.cobertura.xml # Wildcard for GUID folder
         flag-name: unit-tests
         parallel: false
