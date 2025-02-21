@@ -1,6 +1,6 @@
 # Company Records
 
-![last-commit](https://badgen.net/github/last-commit/BianorAraujo/company-api) ![license](https://badgen.net/github/license/BianorAraujo/company-api)
+![last-commit](https://badgen.net/github/last-commit/BianorAraujo/company-api) ![license](https://badgen.net/github/license/BianorAraujo/company-api) [![Coverage Status](https://coveralls.io/repos/github/BianorAraujo/company-api/badge.svg?branch=develop)](https://coveralls.io/github/BianorAraujo/company-api?branch=main)
 
 This application was created as a code challenge to validate my skills in a hiring process.
 
