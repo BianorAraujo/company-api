@@ -21,14 +21,14 @@ jobs:
         dotnet-version: '9.0.x' # Adjust to your .NET version
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore .backend/CompanyApi.sln
 
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build .backend/CompanyApi.sln --no-restore
 
     - name: Run tests with coverage
       run: dotnet test --no-build --collect:"XPlat Code Coverage" --results-directory ./coverage
-      working-directory: .backend/CompanyApi.Test # Adjust to your test project path
+      working-directory: .backend/CompanyApi.Test
 
     - name: Publish to Coveralls
       uses: coverallsapp/github-action@v2
