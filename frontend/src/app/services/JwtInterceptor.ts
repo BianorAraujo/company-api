@@ -39,7 +39,7 @@ export class JwtInterceptor implements HttpInterceptor {
             token = response.token;
           });
         }
-        return throwError(error);
+        return throwError(() => error);
       })
     );
   }
