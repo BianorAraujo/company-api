@@ -48,16 +48,25 @@ jobs:
       working-directory: ./frontend
 
     # Publish to Coveralls
-    - name: Publish to Coveralls
+    - name: Publish .NET coverage to Coveralls
       uses: coverallsapp/github-action@v2
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         parallel: true
-        flag-name: coverage-${{ matrix.project }}
-        files: |
-          ./backend/CompanyApi.Test/coverage/*/coverage.cobertura.xml
-          ./frontend/coverage/lcov.info
-        
+        flag-name: dotnet-tests
+        file: ./backend/CompanyApi.Test/coverage/*/coverage.cobertura.xml
+
+    - name: Check Angular coverage file accessibility
+      run: cat ./frontend/coverage/lcov.info || echo "Failed to read lcov.info"
+
+    - name: Publish Angular coverage to Coveralls
+      uses: coverallsapp/github-action@v2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        parallel: true
+        flag-name: angular-tests
+        file: ./frontend/coverage/lcov.info
+
     - name: Finish Coveralls
       uses: coverallsapp/github-action@v2
       with:
