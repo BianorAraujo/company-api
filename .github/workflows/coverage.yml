@@ -56,8 +56,8 @@ jobs:
         flag-name: dotnet-tests
         file: ./backend/CompanyApi.Test/coverage/*/coverage.cobertura.xml
 
-    - name: Check Angular coverage file accessibility
-      run: cat ./frontend/coverage/lcov.info || echo "Failed to read lcov.info"
+    #- name: Check Angular coverage file accessibility
+    #  run: cat ./frontend/coverage/lcov.info || echo "Failed to read lcov.info"
 
     - name: Publish Angular coverage to Coveralls
       uses: coverallsapp/github-action@v2
