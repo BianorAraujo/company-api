@@ -15,6 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    # .NET
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -32,10 +33,33 @@ jobs:
       run: dotnet test --no-build --collect:"XPlat Code Coverage" --results-directory ./coverage
       working-directory: ./backend/CompanyApi.Test
 
+    # Angular
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Angular dependencies
+      run: npm ci
+      working-directory: ./frontend
+
+    - name: Run Angular tests with coverage
+      run: npx ng test --no-watch --code-coverage
+      working-directory: ./frontend
+
+    # Publish to Coveralls
     - name: Publish to Coveralls
       uses: coverallsapp/github-action@v2
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ./backend/CompanyApi.Test/coverage/*/coverage.cobertura.xml
-        flag-name: unit-tests
-        parallel: false
+        parallel: true
+        flag-name: coverage-${{ matrix.project }}
+        files: |
+          ./backend/CompanyApi.Test/coverage/*/coverage.cobertura.xml
+          ./frontend/coverage/lcov.info
+        
+    - name: Finish Coveralls
+      uses: coverallsapp/github-action@v2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        parallel-finished: true
