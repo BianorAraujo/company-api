@@ -47,6 +47,14 @@ jobs:
       run: npx ng test --no-watch --code-coverage
       working-directory: ./frontend
 
+    - name: Debug Angular coverage output
+      run: ls -la ./coverage || echo "Coverage directory not found"
+      working-directory: ./frontend
+
+    - name: Fix coverage file permissions
+      run: chmod -R +r ./coverage
+      working-directory: ./frontend
+      
     # Publish to Coveralls
     - name: Publish to Coveralls
       uses: coverallsapp/github-action@v2
