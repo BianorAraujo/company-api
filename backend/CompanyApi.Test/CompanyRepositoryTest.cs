@@ -30,6 +30,7 @@ public class CompanyRepositoryTest
         //Act
         var result = await _companyRepository.GetAll();
 
+        //Assert
         Assert.NotNull(result);
         Assert.IsType<List<Company>>(result.ToList());
         Assert.Equal(3, result.Count());
