@@ -46,4 +46,9 @@ public static class FakeCompany
     {
         return new List<Company> ();
     }
+
+    public static Company? GetCompanyById(int id)
+    {
+        return list.Find(x => x.Id == id);
+    }
 }
