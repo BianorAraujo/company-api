@@ -67,6 +67,7 @@ public class CompanyRepositoryTest
             It.IsAny<CommandType?>()
         )).ThrowsAsync(new Exception("Database error"));
 
+        //Act and Assert
         await Assert.ThrowsAsync<Exception>(() => _companyRepository.GetAll());
     }
 
@@ -104,6 +105,22 @@ public class CompanyRepositoryTest
     }
 
     [Fact]
+    public async Task CompanyRepository_GetById_ThrowsException_WhenDapperFails()
+    {
+        //Arrage
+        _dapperMock.Setup(x => x.QueryFirstOrDefaultAsync<Company>(
+            It.IsAny<string>(),
+            It.IsAny<object>(),
+            It.IsAny<IDbTransaction>(),
+            It.IsAny<int?>(),
+            It.IsAny<CommandType?>()
+        )).ThrowsAsync(new Exception("Database error"));
+
+        //Act and Assert
+        await Assert.ThrowsAsync<Exception>(() => _companyRepository.GetById(1));
+    }
+
+    [Fact]
     public async Task CompanyRepository_GetByIsin_ReturnCompanyByIsin()
     {
         //Arrange
@@ -137,6 +154,22 @@ public class CompanyRepositoryTest
     }
 
     [Fact]
+    public async Task CompanyRepository_GetByIsin_ThrowsException_WhenDapperFails()
+    {
+        //Arrage
+        _dapperMock.Setup(x => x.QueryFirstOrDefaultAsync<Company>(
+            It.IsAny<string>(),
+            It.IsAny<object>(),
+            It.IsAny<IDbTransaction>(),
+            It.IsAny<int?>(),
+            It.IsAny<CommandType?>()
+        )).ThrowsAsync(new Exception("Database error"));
+
+        //Act and Assert
+        await Assert.ThrowsAsync<Exception>(() => _companyRepository.GetByIsin("INVALID_ISIN"));
+    }
+
+    [Fact]
     public async Task CompanyRepository_Create_ReturnCompanyCreated()
     {
         //Arrange
@@ -158,6 +191,30 @@ public class CompanyRepositoryTest
         Assert.IsType<int>(result);
         Assert.Equal(4, result);
         Assert.IsNotType<Company>(result);
+    }
+
+    [Fact]
+    public async Task CompanyRepository_Create_ThrowsException_WhenDapperFails()
+    {
+        //Arrage
+        var company = new Company {
+            Name = "Heineken NV",
+            Exchange = "Euronext Amsterdam",
+            Ticker = "HEIA",
+            Isin = "NL0000009165",
+            Website = null
+        };
+
+        _dapperMock.Setup(x => x.ExecuteScalarAsync<int>(
+            It.IsAny<string>(),
+            It.IsAny<object>(),
+            It.IsAny<IDbTransaction>(),
+            It.IsAny<int?>(),
+            It.IsAny<CommandType?>()
+        )).ThrowsAsync(new Exception("Database error"));
+
+        //Act and Assert
+        await Assert.ThrowsAsync<Exception>(() => _companyRepository.Create(company));
     }
 
     [Fact]
@@ -195,5 +252,24 @@ public class CompanyRepositoryTest
         Assert.False(result);
 
 
+    }
+
+    [Fact]
+    public async Task CompanyRepository_Update_ThrowsException_WhenDapperFails()
+    {
+        //Arrage
+        var company = FakeCompany.GetCompany();
+        company.Name = "New Company name";
+
+        _dapperMock.Setup(x => x.ExecuteAsync(
+            It.IsAny<string>(),
+            It.IsAny<object>(),
+            It.IsAny<IDbTransaction>(),
+            It.IsAny<int?>(),
+            It.IsAny<CommandType?>()
+        )).ThrowsAsync(new Exception("Database error"));
+
+        //Act and Assert
+        await Assert.ThrowsAsync<Exception>(() => _companyRepository.Update(company));
     }
 }
