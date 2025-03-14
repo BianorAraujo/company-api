@@ -56,6 +56,21 @@ public class CompanyRepositoryTest
     }
 
     [Fact]
+    public async Task CompanyRepository_GetAll_ThrowsException_WhenDapperFails()
+    {
+        //Arrage
+        _dapperMock.Setup(x => x.QueryAsync<Company>(
+            It.IsAny<string>(),
+            It.IsAny<object>(),
+            It.IsAny<IDbTransaction>(),
+            It.IsAny<int?>(),
+            It.IsAny<CommandType?>()
+        )).ThrowsAsync(new Exception("Database error"));
+
+        await Assert.ThrowsAsync<Exception>(() => _companyRepository.GetAll());
+    }
+
+    [Fact]
     public async Task CompanyRepository_GetById_ReturnCompanyById()
     {
         //Arrange
@@ -75,6 +90,20 @@ public class CompanyRepositoryTest
     }
 
     [Fact]
+    public async Task CompanyRepository_GetById_ReturnNullCompany()
+    {
+        //Arrange
+        _dapperMock.Setup(x => x.QueryFirstOrDefaultAsync<Company>(It.IsAny<string>(), null, null, null, null))
+            .ReturnsAsync((Company)null);
+
+        //Act
+        var result = await _companyRepository.GetById(999);
+
+        //Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
     public async Task CompanyRepository_GetByIsin_ReturnCompanyByIsin()
     {
         //Arrange
@@ -91,6 +120,20 @@ public class CompanyRepositoryTest
         Assert.IsType<Company>(result);
         Assert.Equal(company.Isin, result.Isin);
         Assert.Matches("^[a-zA-Z]{2}", result.Isin);
+    }
+
+    [Fact]
+    public async Task CompanyRepository_GetByIsin_ReturnNullCompany()
+    {
+        //Arrange
+        _dapperMock.Setup(x => x.QueryFirstOrDefaultAsync<Company>(It.IsAny<string>(), null, null, null, null))
+            .ReturnsAsync((Company)null);
+
+        //Act
+        var result = await _companyRepository.GetByIsin("AA1212121212");
+
+        //Assert
+        Assert.Null(result);
     }
 
     [Fact]
@@ -132,6 +175,25 @@ public class CompanyRepositoryTest
 
         //Assert
         Assert.True(result);
+
+    }
+
+    [Fact]
+    public async Task CompanyRepository_Update_ReturnEmptyCompany()
+    {
+        //Arrange
+        var company = FakeCompany.GetCompany();
+        company.Name = "New Company name";
+
+        _dapperMock.Setup(x => x.ExecuteAsync(It.IsAny<string>(), null, null, null, null))
+            .ReturnsAsync(0);
+        
+        //Act
+        var result = await _companyRepository.Update(company);
+
+        //Assert
+        Assert.False(result);
+
 
     }
 }
