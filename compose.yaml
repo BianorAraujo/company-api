@@ -32,7 +32,7 @@ services:
   #backend container
   web-api:
     build:
-      context: ./backend
+      context: ./src
       dockerfile: Dockerfile
     container_name: dotnet-api
     ports:
@@ -45,7 +45,7 @@ services:
   # Aplicação Angular 16
   web-app:
     build:
-      context: ./frontend
+      context: ./src/CompanyApp.WebUI
       dockerfile: Dockerfile
     container_name: angular-app
     ports:
