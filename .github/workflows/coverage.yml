@@ -21,13 +21,13 @@ jobs:
       with:
         dotnet-version: '9.0.x'
 
-    # - name: Restore dependencies
-    #   run: dotnet restore CompanyApi.sln
-    #   working-directory: ./backend
+    - name: Restore dependencies
+      run: dotnet restore CompanyApp.Test.csproj
+      working-directory: ./test/CompanyApp.Test
 
-    # - name: Build
-    #   run: dotnet build CompanyApi.sln --no-restore
-    #   working-directory: ./backend
+    - name: Build
+      run: dotnet build CompanyApp.Test.csproj --no-restore
+      working-directory: ./test/CompanyApp.Test
 
     - name: Run tests with coverage
       run: dotnet test --no-build --collect:"XPlat Code Coverage" --results-directory ./coverage
