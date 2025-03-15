@@ -4,6 +4,7 @@ using CompanyApp.Domain.Entities;
 using CompanyApp.Api.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 
 namespace CompanyApp.Api.Controllers;
 
@@ -83,12 +84,13 @@ public class CompanyController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
         
-        var company = await _repository.GetByIsin(viewModel.Isin);
-        if (company != null)
-            return BadRequest(new { code = "ISIN", error = "The ISIN already exists!" });
-
         try
         {
+            var company = await _repository.GetByIsin(viewModel.Isin);
+
+            if (company != null)
+                return BadRequest(new { code = "ISIN", error = "The ISIN already exists!" });
+
             var id = await _repository.Create(_mapper.Map<Company>(viewModel));
 
             return Ok(id);
@@ -116,6 +118,27 @@ public class CompanyController : ControllerBase
         {
             var result = await _repository.Update(_mapper.Map<Company>(viewModel));
 
+            if(result)
+                return Ok();
+            else
+                return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpDelete("Delete/{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        if(!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
+        {
+            var result = await _repository.Delete(id);
+            
             if(result)
                 return Ok();
             else

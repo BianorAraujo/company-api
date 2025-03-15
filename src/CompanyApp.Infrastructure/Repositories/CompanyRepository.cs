@@ -15,17 +15,8 @@ public class CompanyRepository : ICompanyRepository
     public async Task<IEnumerable<Company>> GetAll()
     {
         try
-        {            
-            const string sql = @"SELECT
-                                    Id,
-                                    Name,
-                                    Exchange,
-                                    Ticker,
-                                    Isin,
-                                    Website
-                                FROM Company";
-
-            var companies = await _dapper.QueryAsync<Company>(sql);
+        {
+            var companies = await _dapper.QueryAsync<Company>(DapperQueries.SelectAll);
 
             return companies;
         }
@@ -39,19 +30,7 @@ public class CompanyRepository : ICompanyRepository
     {
         try
         {
-            const string sql = @"
-                SELECT
-                    Id,
-                    Name,
-                    Exchange,
-                    Ticker,
-                    Isin,
-                    Website
-                FROM Company
-                WHERE
-                    Id = @Id";
-
-            var company = await _dapper.QueryFirstOrDefaultAsync<Company>(sql, new { Id = id });
+            var company = await _dapper.QueryFirstOrDefaultAsync<Company>(DapperQueries.SelectById, new { Id = id });
             
             return company;
         }
@@ -65,19 +44,7 @@ public class CompanyRepository : ICompanyRepository
     {
         try
         {
-            const string sql = @"
-                SELECT
-                    Id,
-                    Name,
-                    Exchange,
-                    Ticker,
-                    Isin,
-                    Website
-                FROM Company
-                WHERE
-                    Isin = @Isin";
-
-            var company = await _dapper.QueryFirstOrDefaultAsync<Company>(sql, new { Isin = isin});
+            var company = await _dapper.QueryFirstOrDefaultAsync<Company>(DapperQueries.SelectByIsin, new { Isin = isin});
             
             return company;
         }
@@ -99,25 +66,7 @@ public class CompanyRepository : ICompanyRepository
                 company.Website
             };
 
-            const string sql = @"
-                INSERT INTO Company (
-                                Name,
-                                Exchange,
-                                Ticker,
-                                Isin,
-                                Website
-                            )
-                            VALUES (
-                                @Name,
-                                @Exchange,
-                                @Ticker,
-                                @Isin,
-                                @Website
-                            );
-
-                SELECT SCOPE_IDENTITY();";
-
-            var id = await _dapper.ExecuteScalarAsync<int>(sql, parameters);
+            var id = await _dapper.ExecuteScalarAsync<int>(DapperQueries.Insert, parameters);
 
             return id;
         }
@@ -139,23 +88,35 @@ public class CompanyRepository : ICompanyRepository
                 company.Isin,
                 company.Website
             };
-
-            const string sql = @"
-                UPDATE Company 
-                SET Name = @Name, 
-                    Exchange = @Exchange, 
-                    Ticker = @Ticker, 
-                    Isin = @Isin, 
-                    Website = @Website 
-                WHERE Id = @Id";
             
-            var result = await _dapper.ExecuteAsync(sql, parameters);
+            var result = await _dapper.ExecuteAsync(DapperQueries.Update, parameters);
 
             if(result != 1)
                 return false;
             
             return true;
 
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    public async Task<bool> Delete(int id)
+    {
+        try
+        {
+            var parameters = new {
+                id
+            };
+            
+            var result = await _dapper.ExecuteAsync(DapperQueries.Delete, parameters);
+
+            if(result != 1)
+                return false;
+            
+            return true;
         }
         catch (Exception ex)
         {

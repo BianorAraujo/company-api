@@ -9,4 +9,5 @@ public interface ICompanyRepository
     Task<Company> GetByIsin(string isin);
     Task<int> Create(Company company);
     Task<bool> Update(Company company);
+    Task<bool> Delete(int id);
 }
