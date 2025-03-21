@@ -10,12 +10,14 @@ namespace CompanyApp.Test;
 public class CompanyRepositoryTest
 {
     private readonly Mock<IDapperRepository> _dapperMock;
+    private readonly Mock<ICompanyDapperRepository> _dapperRepoMock;
     private readonly ICompanyRepository _companyRepository;
 
     public CompanyRepositoryTest()
     {
         _dapperMock = new Mock<IDapperRepository>();
-        _companyRepository = new CompanyRepository(_dapperMock.Object);
+        _dapperRepoMock = new Mock<ICompanyDapperRepository>();
+        _companyRepository = new CompanyRepository(_dapperMock.Object, _dapperRepoMock.Object);
     }
 
     [Fact]
@@ -24,13 +26,15 @@ public class CompanyRepositoryTest
         //Arrange
         var companiesList = FakeCompany.GetList();
 
-        _dapperMock.Setup(x => x.QueryAsync<Company>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), null, null))
-            .ReturnsAsync(companiesList);
 
-        //Act
+        // _dapperMock.Setup(x => x.QueryAsync<Company>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), null, null))
+        //     .ReturnsAsync(companiesList);
+        _dapperRepoMock.Setup(x => x.GetAll()).ReturnsAsync(companiesList);
+
+        // //Act
         var result = await _companyRepository.GetAll();
 
-        //Assert
+        // //Assert
         Assert.NotNull(result);
         Assert.IsType<List<Company>>(result.ToList());
         Assert.Equal(3, result.Count());
@@ -43,8 +47,9 @@ public class CompanyRepositoryTest
         // Arrange
         List<Company> companiesList = FakeCompany.GetEmptyList();
 
-        _dapperMock.Setup(x => x.QueryAsync<Company>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), null, null))
-            .ReturnsAsync(companiesList);
+        // _dapperMock.Setup(x => x.QueryAsync<Company>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), null, null))
+        //     .ReturnsAsync(companiesList);
+        _dapperRepoMock.Setup(x => x.GetAll()).ReturnsAsync(companiesList);
 
         // Act
         var result = await _companyRepository.GetAll();
@@ -59,13 +64,14 @@ public class CompanyRepositoryTest
     public async Task CompanyRepository_GetAll_ThrowsException_WhenDapperFails()
     {
         //Arrage
-        _dapperMock.Setup(x => x.QueryAsync<Company>(
-            It.IsAny<string>(),
-            It.IsAny<object>(),
-            It.IsAny<IDbTransaction>(),
-            It.IsAny<int?>(),
-            It.IsAny<CommandType?>()
-        )).ThrowsAsync(new Exception("Database error"));
+        // _dapperMock.Setup(x => x.QueryAsync<Company>(
+        //     It.IsAny<string>(),
+        //     It.IsAny<object>(),
+        //     It.IsAny<IDbTransaction>(),
+        //     It.IsAny<int?>(),
+        //     It.IsAny<CommandType?>()
+        // )).ThrowsAsync(new Exception("Database error"));
+        _dapperRepoMock.Setup(x => x.GetAll()).ThrowsAsync(new Exception("Database error"));
 
         //Act and Assert
         await Assert.ThrowsAsync<Exception>(() => _companyRepository.GetAll());
@@ -77,8 +83,9 @@ public class CompanyRepositoryTest
         //Arrange
         var company = FakeCompany.GetCompany();
 
-        _dapperMock.Setup(x => x.QueryFirstOrDefaultAsync<Company>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), null, null))
-            .ReturnsAsync(company);
+        // _dapperMock.Setup(x => x.QueryFirstOrDefaultAsync<Company>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), null, null))
+        //     .ReturnsAsync(company);
+        _dapperRepoMock.Setup(x => x.GetById(It.IsAny<int>())).ReturnsAsync(company);
 
         //Act
         var result = await _companyRepository.GetById(company.Id);
@@ -94,8 +101,9 @@ public class CompanyRepositoryTest
     public async Task CompanyRepository_GetById_ReturnNullCompany()
     {
         //Arrange
-        _dapperMock.Setup(x => x.QueryFirstOrDefaultAsync<Company>(It.IsAny<string>(), null, null, null, null))
-            .ReturnsAsync((Company)null);
+        // _dapperMock.Setup(x => x.QueryFirstOrDefaultAsync<Company>(It.IsAny<string>(), null, null, null, null))
+        //     .ReturnsAsync((Company)null);
+        _dapperRepoMock.Setup(x => x.GetById(It.IsAny<int>())).ReturnsAsync((Company)null);
 
         //Act
         var result = await _companyRepository.GetById(999);
@@ -108,13 +116,14 @@ public class CompanyRepositoryTest
     public async Task CompanyRepository_GetById_ThrowsException_WhenDapperFails()
     {
         //Arrage
-        _dapperMock.Setup(x => x.QueryFirstOrDefaultAsync<Company>(
-            It.IsAny<string>(),
-            It.IsAny<object>(),
-            It.IsAny<IDbTransaction>(),
-            It.IsAny<int?>(),
-            It.IsAny<CommandType?>()
-        )).ThrowsAsync(new Exception("Database error"));
+        // _dapperMock.Setup(x => x.QueryFirstOrDefaultAsync<Company>(
+        //     It.IsAny<string>(),
+        //     It.IsAny<object>(),
+        //     It.IsAny<IDbTransaction>(),
+        //     It.IsAny<int?>(),
+        //     It.IsAny<CommandType?>()
+        // )).ThrowsAsync(new Exception("Database error"));
+        _dapperRepoMock.Setup(x => x.GetById(It.IsAny<int>())).ThrowsAsync(new Exception("Database error"));
 
         //Act and Assert
         await Assert.ThrowsAsync<Exception>(() => _companyRepository.GetById(1));
@@ -126,8 +135,9 @@ public class CompanyRepositoryTest
         //Arrange
         var company = FakeCompany.GetCompany();
 
-        _dapperMock.Setup(x => x.QueryFirstOrDefaultAsync<Company>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), null, null))
-            .ReturnsAsync(company);
+        // _dapperMock.Setup(x => x.QueryFirstOrDefaultAsync<Company>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), null, null))
+        //     .ReturnsAsync(company);
+        _dapperRepoMock.Setup(x => x.GetByIsin(It.IsAny<string>())).ReturnsAsync(company);
 
         //Act
         var result = await _companyRepository.GetByIsin(company.Isin);
@@ -143,8 +153,9 @@ public class CompanyRepositoryTest
     public async Task CompanyRepository_GetByIsin_ReturnNullCompany()
     {
         //Arrange
-        _dapperMock.Setup(x => x.QueryFirstOrDefaultAsync<Company>(It.IsAny<string>(), null, null, null, null))
-            .ReturnsAsync((Company)null);
+        // _dapperMock.Setup(x => x.QueryFirstOrDefaultAsync<Company>(It.IsAny<string>(), null, null, null, null))
+        //     .ReturnsAsync((Company)null);
+        _dapperRepoMock.Setup(x => x.GetByIsin(It.IsAny<string>())).ReturnsAsync((Company)null);
 
         //Act
         var result = await _companyRepository.GetByIsin("AA1212121212");
@@ -157,13 +168,14 @@ public class CompanyRepositoryTest
     public async Task CompanyRepository_GetByIsin_ThrowsException_WhenDapperFails()
     {
         //Arrage
-        _dapperMock.Setup(x => x.QueryFirstOrDefaultAsync<Company>(
-            It.IsAny<string>(),
-            It.IsAny<object>(),
-            It.IsAny<IDbTransaction>(),
-            It.IsAny<int?>(),
-            It.IsAny<CommandType?>()
-        )).ThrowsAsync(new Exception("Database error"));
+        // _dapperMock.Setup(x => x.QueryFirstOrDefaultAsync<Company>(
+        //     It.IsAny<string>(),
+        //     It.IsAny<object>(),
+        //     It.IsAny<IDbTransaction>(),
+        //     It.IsAny<int?>(),
+        //     It.IsAny<CommandType?>()
+        // )).ThrowsAsync(new Exception("Database error"));
+        _dapperRepoMock.Setup(x => x.GetByIsin(It.IsAny<string>())).ThrowsAsync(new Exception("Database error"));
 
         //Act and Assert
         await Assert.ThrowsAsync<Exception>(() => _companyRepository.GetByIsin("INVALID_ISIN"));
@@ -186,7 +198,7 @@ public class CompanyRepositoryTest
 
         //Act
         var result = await _companyRepository.Create(company);
-        
+
         //Assert
         Assert.IsType<int>(result);
         Assert.Equal(4, result);
@@ -244,7 +256,7 @@ public class CompanyRepositoryTest
 
         _dapperMock.Setup(x => x.ExecuteAsync(It.IsAny<string>(), null, null, null, null))
             .ReturnsAsync(0);
-        
+
         //Act
         var result = await _companyRepository.Update(company);
 

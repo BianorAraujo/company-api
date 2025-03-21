@@ -1,57 +1,35 @@
 using CompanyApp.Domain.Interfaces;
 using CompanyApp.Domain.Entities;
+using CompanyApp.Infrastructure.Data;
 
 namespace CompanyApp.Infrastructure.Repositories;
 
 public class CompanyRepository : ICompanyRepository
 {
     private readonly IDapperRepository _dapper;
+    private readonly ICompanyDapperRepository _dapperRepo;
+    private readonly ApplicationContext _appContext;
 
-    public CompanyRepository(IDapperRepository dapper) 
+    public CompanyRepository(IDapperRepository dapper, ICompanyDapperRepository dapperRepo, ApplicationContext appContext) 
     {
         _dapper = dapper;
+        _dapperRepo = dapperRepo;
+        _appContext = appContext;
     }
 
     public async Task<IEnumerable<Company>> GetAll()
     {
-        try
-        {
-            var companies = await _dapper.QueryAsync<Company>(DapperQueries.SelectAll);
-
-            return companies;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
-        }
+        return await _dapperRepo.GetAll();
     }
 
     public async Task<Company> GetById(int id)
     {
-        try
-        {
-            var company = await _dapper.QueryFirstOrDefaultAsync<Company>(DapperQueries.SelectById, new { Id = id });
-            
-            return company;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
-        }
+        return await _dapperRepo.GetById(id);
     }
 
     public async Task<Company> GetByIsin(string isin)
     {
-        try
-        {
-            var company = await _dapper.QueryFirstOrDefaultAsync<Company>(DapperQueries.SelectByIsin, new { Isin = isin});
-            
-            return company;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
-        }
+        return await _dapperRepo.GetByIsin(isin);
     }
 
     public async Task<int> Create(Company company)
@@ -66,7 +44,10 @@ public class CompanyRepository : ICompanyRepository
                 company.Website
             };
 
-            var id = await _dapper.ExecuteScalarAsync<int>(DapperQueries.Insert, parameters);
+            company.Id = 0;
+
+            _appContext.Company.Add(company);// _dapper.ExecuteScalarAsync<int>(DapperQueries.Insert, parameters);
+             var id = await _appContext.SaveChangesAsync();
 
             return id;
         }
