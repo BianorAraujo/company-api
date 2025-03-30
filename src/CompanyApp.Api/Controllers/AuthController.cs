@@ -18,6 +18,9 @@ public class AuthController : ControllerBase
     [HttpGet("GetToken")]
     public IActionResult GetToken()
     {
+        if(_configuration["Jwt:Key"] == null)
+            throw new Exception("Jwt Key not defined");
+        
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 

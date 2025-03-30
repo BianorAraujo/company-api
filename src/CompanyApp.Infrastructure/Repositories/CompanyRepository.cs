@@ -5,86 +5,28 @@ namespace CompanyApp.Infrastructure.Repositories;
 
 public class CompanyRepository : ICompanyRepository
 {
-    private readonly IDapperRepository _dapper;
+    private readonly ICompanyDapperRepository _dapperRepo;
+    private readonly ICompanyEFRepository _efRepo;
 
-    public CompanyRepository(IDapperRepository dapper) 
+    public CompanyRepository(ICompanyDapperRepository dapperRepo, ICompanyEFRepository efRepo) 
     {
-        _dapper = dapper;
+        _dapperRepo = dapperRepo;
+        _efRepo = efRepo;
     }
 
     public async Task<IEnumerable<Company>> GetAll()
     {
-        try
-        {            
-            const string sql = @"SELECT
-                                    Id,
-                                    Name,
-                                    Exchange,
-                                    Ticker,
-                                    Isin,
-                                    Website
-                                FROM Company";
-
-            var companies = await _dapper.QueryAsync<Company>(sql);
-
-            return companies;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
-        }
+        return await _dapperRepo.GetAll();
     }
 
     public async Task<Company> GetById(int id)
     {
-        try
-        {
-            const string sql = @"
-                SELECT
-                    Id,
-                    Name,
-                    Exchange,
-                    Ticker,
-                    Isin,
-                    Website
-                FROM Company
-                WHERE
-                    Id = @Id";
-
-            var company = await _dapper.QueryFirstOrDefaultAsync<Company>(sql, new { Id = id });
-            
-            return company;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
-        }
+        return await _dapperRepo.GetById(id);
     }
 
     public async Task<Company> GetByIsin(string isin)
     {
-        try
-        {
-            const string sql = @"
-                SELECT
-                    Id,
-                    Name,
-                    Exchange,
-                    Ticker,
-                    Isin,
-                    Website
-                FROM Company
-                WHERE
-                    Isin = @Isin";
-
-            var company = await _dapper.QueryFirstOrDefaultAsync<Company>(sql, new { Isin = isin});
-            
-            return company;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
-        }
+        return await _dapperRepo.GetByIsin(isin);
     }
 
     public async Task<int> Create(Company company)
@@ -99,25 +41,9 @@ public class CompanyRepository : ICompanyRepository
                 company.Website
             };
 
-            const string sql = @"
-                INSERT INTO Company (
-                                Name,
-                                Exchange,
-                                Ticker,
-                                Isin,
-                                Website
-                            )
-                            VALUES (
-                                @Name,
-                                @Exchange,
-                                @Ticker,
-                                @Isin,
-                                @Website
-                            );
+            company.Id = 0;
 
-                SELECT SCOPE_IDENTITY();";
-
-            var id = await _dapper.ExecuteScalarAsync<int>(sql, parameters);
+            var id = await _efRepo.Create(company);
 
             return id;
         }
@@ -139,23 +65,25 @@ public class CompanyRepository : ICompanyRepository
                 company.Isin,
                 company.Website
             };
-
-            const string sql = @"
-                UPDATE Company 
-                SET Name = @Name, 
-                    Exchange = @Exchange, 
-                    Ticker = @Ticker, 
-                    Isin = @Isin, 
-                    Website = @Website 
-                WHERE Id = @Id";
             
-            var result = await _dapper.ExecuteAsync(sql, parameters);
+            var result = await _efRepo.Update(company);
 
-            if(result != 1)
-                return false;
-            
-            return true;
+            return result;
 
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    public async Task<bool> Delete(int id)
+    {
+        try
+        {
+            var result = await _efRepo.Delete(id);
+
+            return result;
         }
         catch (Exception ex)
         {
