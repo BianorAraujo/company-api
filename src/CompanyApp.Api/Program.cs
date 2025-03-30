@@ -1,14 +1,11 @@
-using System.Data;
 using CompanyApp.Infrastructure.Repositories;
 using CompanyApp.Domain.Interfaces;
-using Microsoft.Data.SqlClient;
 using Scalar.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using CompanyApp.Infrastructure.Data;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using CompanyApp.Infrastructure.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,7 +49,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<ICompanyDapperRepository, CompanyDapperRepository>();
-builder.Services.AddScoped<IDapperRepository, DapperRepository>();
+builder.Services.AddScoped<ICompanyEFRepository, CompanyEFRepository>();
+builder.Services.AddScoped<IApplicationContext, ApplicationContext>();
 
 var app = builder.Build();
 

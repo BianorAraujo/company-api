@@ -4,7 +4,6 @@ using CompanyApp.Domain.Entities;
 using CompanyApp.Api.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
 
 namespace CompanyApp.Api.Controllers;
 

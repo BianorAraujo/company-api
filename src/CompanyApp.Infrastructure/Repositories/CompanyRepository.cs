@@ -1,20 +1,17 @@
 using CompanyApp.Domain.Interfaces;
 using CompanyApp.Domain.Entities;
-using CompanyApp.Infrastructure.Data;
 
 namespace CompanyApp.Infrastructure.Repositories;
 
 public class CompanyRepository : ICompanyRepository
 {
-    private readonly IDapperRepository _dapper;
     private readonly ICompanyDapperRepository _dapperRepo;
-    private readonly ApplicationContext _appContext;
+    private readonly ICompanyEFRepository _efRepo;
 
-    public CompanyRepository(IDapperRepository dapper, ICompanyDapperRepository dapperRepo, ApplicationContext appContext) 
+    public CompanyRepository(ICompanyDapperRepository dapperRepo, ICompanyEFRepository efRepo) 
     {
-        _dapper = dapper;
         _dapperRepo = dapperRepo;
-        _appContext = appContext;
+        _efRepo = efRepo;
     }
 
     public async Task<IEnumerable<Company>> GetAll()
@@ -46,8 +43,7 @@ public class CompanyRepository : ICompanyRepository
 
             company.Id = 0;
 
-            _appContext.Company.Add(company);// _dapper.ExecuteScalarAsync<int>(DapperQueries.Insert, parameters);
-             var id = await _appContext.SaveChangesAsync();
+            var id = await _efRepo.Create(company);
 
             return id;
         }
@@ -70,12 +66,9 @@ public class CompanyRepository : ICompanyRepository
                 company.Website
             };
             
-            var result = await _dapper.ExecuteAsync(DapperQueries.Update, parameters);
+            var result = await _efRepo.Update(company);
 
-            if(result != 1)
-                return false;
-            
-            return true;
+            return result;
 
         }
         catch (Exception ex)
@@ -88,16 +81,9 @@ public class CompanyRepository : ICompanyRepository
     {
         try
         {
-            var parameters = new {
-                id
-            };
-            
-            var result = await _dapper.ExecuteAsync(DapperQueries.Delete, parameters);
+            var result = await _efRepo.Delete(id);
 
-            if(result != 1)
-                return false;
-            
-            return true;
+            return result;
         }
         catch (Exception ex)
         {
