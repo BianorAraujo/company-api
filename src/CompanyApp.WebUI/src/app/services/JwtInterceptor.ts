@@ -1,44 +1,52 @@
 import { Injectable } from '@angular/core';
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+  HttpErrorResponse
+} from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { JwtHelperService } from '@auth0/angular-jwt';
+import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-  constructor(private jwtHelper: JwtHelperService, private authService: AuthService) {}
+  constructor(private authService: AuthService) {}
 
-  intercept(
-    req: HttpRequest<any>,
-    next: HttpHandler
-  ): Observable<HttpEvent<any>> {
-    let token = localStorage.getItem('token');
-
-    if (token && this.jwtHelper.isTokenExpired(token)) {
-      
-      this.authService.GetToken().subscribe(response => {
-        localStorage.setItem('token', response.token);
-        token = response.token;
-      });
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    if (req.url.includes('/auth/gettoken')) {
+      return next.handle(req);
     }
 
-    if (token) {
-      req = req.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-    }
+    const token = localStorage.getItem('token');
 
-    return next.handle(req).pipe(
-      catchError((error) => {
-        if (error instanceof HttpErrorResponse && error.status === 401) {
-          this.authService.GetToken().subscribe(response => {
-            localStorage.setItem('token', response.token);
-            token = response.token;
-          });
+    const authReq = token
+      ? req.clone({
+          setHeaders: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+      : req;
+
+    return next.handle(authReq).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          return this.authService.GetToken().pipe(
+            switchMap((response: any) => {
+              localStorage.setItem('token', response.token);
+
+              const retryReq = req.clone({
+                setHeaders: {
+                  Authorization: `Bearer ${response.token}`
+                }
+              });
+
+              return next.handle(retryReq);
+            })
+          );
         }
+
         return throwError(() => error);
       })
     );

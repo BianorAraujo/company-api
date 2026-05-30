@@ -1,57 +1,59 @@
-version: '3.9'
 
 services:
   
   # Database container
   sql-server:
     image: mcr.microsoft.com/mssql/server:2019-latest
-    container_name: sql-server
+    container_name: bianor-company-sql-server
     environment:
       ACCEPT_EULA: "1"
       MSSQL_SA_PASSWORD: "Password1!"
     ports:
-      - "1433:1433"
+      - "1434:1434"
     volumes:
       - sqlvolume:/var/opt/mssql
     networks:
-      - companyapi-network
+      - company-network
   
   # Run initial scripts container
   sql-server-cmd:
+    image: bianor-company-dbinit:latest
     build:
       context: ./database
       dockerfile: Dockerfile
-    container_name: sql-server-cmd
-    command: /bin/bash -c '/opt/mssql-tools/bin/sqlcmd -S sql-server -U sa -P Password1! -i /dbinit.sql'
+    container_name: bianor-company-sql-server-cmd
+    command: /bin/bash -c '/opt/mssql-tools/bin/sqlcmd -S bianor-company-sql-server -U sa -P Password1! -i /dbinit.sql'
     restart: on-failure
     networks:
-      - companyapi-network
+      - company-network
     depends_on: 
       - sql-server
   
   #backend container
   web-api:
+    image: bianor-company-api:latest
     build:
       context: ./src
       dockerfile: Dockerfile
-    container_name: dotnet-api
+    container_name: bianor-company-api
     ports:
       - "5055:8080"
     networks:
-      - companyapi-network
+      - company-network
     depends_on: 
       - sql-server
   
   # Aplicação Angular 16
   web-app:
+    image: bianor-company-web:latest
     build:
       context: ./src/CompanyApp.WebUI
       dockerfile: Dockerfile
-    container_name: angular-app
+    container_name: bianor-company-web
     ports:
-      - "4200:80"
+      - "4202:80"
     networks:
-      - companyapi-network
+      - company-network
     depends_on: 
       - web-api
 
@@ -60,5 +62,5 @@ volumes:
   sqlvolume:
 
 networks:
-  companyapi-network:
+  company-network:
     driver: bridge

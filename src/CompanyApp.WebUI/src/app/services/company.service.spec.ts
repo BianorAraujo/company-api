@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { environment } from 'src/environments/environment.development';
+import { environment } from 'src/environments/environment';
 
 import { CompanyService } from './company.service';
 import { Company } from '../models/company';
